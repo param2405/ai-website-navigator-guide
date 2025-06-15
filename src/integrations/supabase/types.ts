@@ -280,6 +280,45 @@ export type Database = {
         }
         Relationships: []
       }
+      user_questionnaires: {
+        Row: {
+          budget: string
+          created_at: string
+          id: string
+          primary_goal: string
+          responses: Json
+          skill_level: string
+          timeline: string
+          updated_at: string
+          user_id: string
+          website_type: string
+        }
+        Insert: {
+          budget: string
+          created_at?: string
+          id?: string
+          primary_goal: string
+          responses: Json
+          skill_level: string
+          timeline: string
+          updated_at?: string
+          user_id: string
+          website_type: string
+        }
+        Update: {
+          budget?: string
+          created_at?: string
+          id?: string
+          primary_goal?: string
+          responses?: Json
+          skill_level?: string
+          timeline?: string
+          updated_at?: string
+          user_id?: string
+          website_type?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
