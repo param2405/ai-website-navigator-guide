@@ -38,25 +38,37 @@ const Auth = () => {
       if (isSignUp) {
         if (!fullName.trim()) {
           toast.error("Please enter your full name");
+          setIsSubmitting(false);
           return;
         }
+        
+        console.log('Starting signup process...');
         const { error } = await signUp(email, password, fullName);
+        
         if (error) {
+          console.error('Signup error:', error);
           if (error.message.includes('User already registered')) {
             toast.error("An account with this email already exists. Please sign in instead.");
           } else {
-            toast.error(error.message);
+            toast.error(error.message || "Signup failed");
           }
         } else {
-          toast.success("Account created successfully! Please check your email to verify your account.");
+          toast.success("Account created successfully! You can now sign in.");
+          setIsSignUp(false); // Switch to sign in mode
+          setPassword(''); // Clear password for security
         }
       } else {
+        console.log('Starting signin process...');
         const { error } = await signIn(email, password);
+        
         if (error) {
+          console.error('Signin error:', error);
           if (error.message.includes('Invalid login credentials')) {
             toast.error("Invalid email or password. Please try again.");
+          } else if (error.message.includes('Email not confirmed')) {
+            toast.error("Please check your email and confirm your account before signing in.");
           } else {
-            toast.error(error.message);
+            toast.error(error.message || "Sign in failed");
           }
         } else {
           toast.success("Welcome back!");
@@ -64,6 +76,7 @@ const Auth = () => {
         }
       }
     } catch (error) {
+      console.error('Auth exception:', error);
       toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -138,6 +151,7 @@ const Auth = () => {
                     required
                     placeholder="Enter your password"
                     className="pr-10"
+                    minLength={6}
                   />
                   <Button
                     type="button"

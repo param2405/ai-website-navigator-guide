@@ -1,9 +1,11 @@
 
 import { Sparkles, Github, Twitter, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 const Footer = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   return (
     <footer className="bg-gray-900 text-white">
@@ -32,6 +34,9 @@ const Footer = () => {
               <li><span className="hover:text-white cursor-pointer transition-colors" onClick={() => navigate('/questionnaire')}>Questionnaire</span></li>
               <li><span className="hover:text-white cursor-pointer transition-colors" onClick={() => navigate('/tools')}>AI Tools</span></li>
               <li><span className="hover:text-white cursor-pointer transition-colors" onClick={() => navigate('/recommendations')}>Recommendations</span></li>
+              {user && (
+                <li><span className="hover:text-white cursor-pointer transition-colors" onClick={() => navigate('/dashboard')}>Dashboard</span></li>
+              )}
             </ul>
           </div>
 
@@ -53,6 +58,9 @@ const Footer = () => {
               <li><span className="hover:text-white cursor-pointer transition-colors">Help Center</span></li>
               <li><span className="hover:text-white cursor-pointer transition-colors">Privacy Policy</span></li>
               <li><span className="hover:text-white cursor-pointer transition-colors">Terms of Service</span></li>
+              {user && (
+                <li><span className="hover:text-white cursor-pointer transition-colors" onClick={() => navigate('/dashboard')}>My Dashboard</span></li>
+              )}
             </ul>
           </div>
         </div>
