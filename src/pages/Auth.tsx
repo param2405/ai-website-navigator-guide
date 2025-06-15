@@ -30,45 +30,75 @@ const Auth = () => {
     }
   }, [user, loading, navigate]);
 
+  const validateForm = () => {
+    if (!email || !password) {
+      toast.error("Please fill in all required fields");
+      return false;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error("Please enter a valid email address");
+      return false;
+    }
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return false;
+    }
+
+    if (isSignUp && !fullName.trim()) {
+      toast.error("Please enter your full name");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
       if (isSignUp) {
-        if (!fullName.trim()) {
-          toast.error("Please enter your full name");
-          setIsSubmitting(false);
-          return;
-        }
-        
         console.log('Starting signup process...');
-        const { error } = await signUp(email, password, fullName);
+        const { error } = await signUp(email.trim(), password, fullName.trim());
         
         if (error) {
           console.error('Signup error:', error);
           if (error.message.includes('User already registered')) {
             toast.error("An account with this email already exists. Please sign in instead.");
+            setIsSignUp(false);
+          } else if (error.message.includes('Invalid email')) {
+            toast.error("Please enter a valid email address");
+          } else if (error.message.includes('Password should be at least 6 characters')) {
+            toast.error("Password must be at least 6 characters long");
           } else {
-            toast.error(error.message || "Signup failed");
+            toast.error(error.message || "Signup failed. Please try again.");
           }
         } else {
-          toast.success("Account created successfully! You can now sign in.");
-          setIsSignUp(false); // Switch to sign in mode
-          setPassword(''); // Clear password for security
+          toast.success("Account created successfully! Please check your email for verification, then sign in.");
+          setIsSignUp(false);
+          setPassword('');
         }
       } else {
         console.log('Starting signin process...');
-        const { error } = await signIn(email, password);
+        const { error } = await signIn(email.trim(), password);
         
         if (error) {
           console.error('Signin error:', error);
           if (error.message.includes('Invalid login credentials')) {
-            toast.error("Invalid email or password. Please try again.");
+            toast.error("Invalid email or password. Please check your credentials and try again.");
           } else if (error.message.includes('Email not confirmed')) {
-            toast.error("Please check your email and confirm your account before signing in.");
+            toast.error("Please check your email and confirm your account before signing in. A new confirmation email has been sent.");
+          } else if (error.message.includes('Too many requests')) {
+            toast.error("Too many login attempts. Please wait a moment and try again.");
           } else {
-            toast.error(error.message || "Sign in failed");
+            toast.error(error.message || "Sign in failed. Please try again.");
           }
         } else {
           toast.success("Welcome back!");
@@ -163,6 +193,9 @@ const Auth = () => {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
                 </div>
+                {isSignUp && (
+                  <p className="text-xs text-gray-500">Password must be at least 6 characters long</p>
+                )}
               </div>
 
               <Button
@@ -179,13 +212,25 @@ const Auth = () => {
                 {isSignUp ? 'Already have an account?' : "Don't have an account?"}
                 <button
                   type="button"
-                  onClick={() => setIsSignUp(!isSignUp)}
+                  onClick={() => {
+                    setIsSignUp(!isSignUp);
+                    setPassword('');
+                    setFullName('');
+                  }}
                   className="ml-1 text-purple-600 hover:text-purple-700 font-medium"
                 >
                   {isSignUp ? 'Sign In' : 'Sign Up'}
                 </button>
               </p>
             </div>
+
+            {!isSignUp && (
+              <div className="mt-4 text-center">
+                <p className="text-xs text-gray-500">
+                  Having trouble? Make sure you've verified your email address.
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

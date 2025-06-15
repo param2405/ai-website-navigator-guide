@@ -51,7 +51,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         options: {
           data: {
             full_name: fullName
-          }
+          },
+          emailRedirectTo: `${window.location.origin}/`
         }
       });
 
@@ -60,6 +61,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (error) {
         console.error('Signup error:', error);
         return { error };
+      }
+
+      // If user is created but not confirmed, still return success
+      if (data.user && !data.user.email_confirmed_at) {
+        console.log('User created but email not confirmed yet');
+        return { error: null };
       }
 
       return { error: null };
@@ -82,6 +89,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       if (error) {
         console.error('Signin error:', error);
+        
+        // If the error is about email not confirmed, try to resend confirmation
+        if (error.message.includes('Email not confirmed')) {
+          console.log('Attempting to resend confirmation email');
+          const { error: resendError } = await supabase.auth.resend({
+            type: 'signup',
+            email: email,
+            options: {
+              emailRedirectTo: `${window.location.origin}/`
+            }
+          });
+          
+          if (resendError) {
+            console.error('Resend error:', resendError);
+          } else {
+            console.log('Confirmation email resent');
+          }
+        }
+        
         return { error };
       }
 
