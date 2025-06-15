@@ -1,12 +1,15 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Code, Palette, Search, Zap, Globe, Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const Tools = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const tools = [
     {
@@ -47,6 +50,14 @@ const Tools = () => {
     }
   ];
 
+  const handleToolClick = () => {
+    if (user) {
+      navigate('/dashboard');
+    } else {
+      navigate('/auth?mode=signup');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
       <Header />
@@ -84,9 +95,9 @@ const Tools = () => {
                 </div>
                 <Button 
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                  onClick={() => navigate('/auth?mode=signup')}
+                  onClick={handleToolClick}
                 >
-                  Try Now
+                  {user ? 'Access Tool' : 'Try Now'}
                 </Button>
               </CardContent>
             </Card>

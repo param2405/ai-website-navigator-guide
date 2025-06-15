@@ -81,7 +81,7 @@ const Auth = () => {
             toast.error(error.message || "Signup failed. Please try again.");
           }
         } else {
-          toast.success("Account created successfully! Please check your email for verification, then sign in.");
+          toast.success("Account created successfully! You can now sign in.");
           setIsSignUp(false);
           setPassword('');
         }
@@ -94,7 +94,7 @@ const Auth = () => {
           if (error.message.includes('Invalid login credentials')) {
             toast.error("Invalid email or password. Please check your credentials and try again.");
           } else if (error.message.includes('Email not confirmed')) {
-            toast.error("Please check your email and confirm your account before signing in. A new confirmation email has been sent.");
+            toast.error("Please check your email and confirm your account before signing in.");
           } else if (error.message.includes('Too many requests')) {
             toast.error("Too many login attempts. Please wait a moment and try again.");
           } else {
@@ -227,7 +227,7 @@ const Auth = () => {
             {!isSignUp && (
               <div className="mt-4 text-center">
                 <p className="text-xs text-gray-500">
-                  Having trouble? Make sure you've verified your email address.
+                  Having trouble? Try creating a new account first.
                 </p>
               </div>
             )}
